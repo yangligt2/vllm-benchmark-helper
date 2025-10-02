@@ -40,25 +40,22 @@ BASE_CONFIG = {
 }
 
 # --- Define the parameter spaces for the 3-D sweep ---
-INPUT_LENS = [4096, 2048]
+INPUT_LENS = [4096, 2048, 1024, 512, 256]
 OUTPUT_LEN_RATIOS = [2, 4, 8, 16]  # Corresponds to 1:1, 1:2, ..., 1:16
 MAX_CONCURRENCY_VALUES = [16, 32, 64, 128, 256, 512]
-
-# This constant is used to calculate num_prompts (e.g., 8 * 1024 * 1024)
-TOTAL_TOKENS_TARGET = 8388608
 
 # Generate the full list of configurations
 BENCHMARK_CONFIGS = []
 
 for input_len in INPUT_LENS:
-    # Calculate num_prompts based on the input length
-    num_prompts = min(8192, TOTAL_TOKENS_TARGET // input_len)
 
     for ratio in OUTPUT_LEN_RATIOS:
         output_len = input_len // ratio
 
         for max_curr in MAX_CONCURRENCY_VALUES:
             config = BASE_CONFIG.copy()
+            num_prompts = max(256, 4 * max_curr)
+
             config.update({
                 "input_len": input_len,
                 "output_len": output_len,

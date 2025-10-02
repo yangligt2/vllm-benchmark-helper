@@ -8,5 +8,10 @@ source ~/workplaces/vllm/.venv/bin/activate
 2. Setup configurations you want to experiment with in ```run_benchmark.py```
 3. Kick off the scrip, better in a screen or tmux session
 ```
-python run_benchmark.py
+python run_benchmarks.py
 ```
+
+
+### V2
+source ~/workplaces/vllm-cpu-bin/.venv/bin/activate 
+python run_benchmarks_v2.py

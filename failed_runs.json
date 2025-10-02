@@ -1,0 +1,36 @@
+[
+    {
+        "model": "nvidia/Llama-3.3-70B-Instruct-FP8",
+        "tokenizer": "nvidia/Llama-3.3-70B-Instruct-FP8",
+        "hardware": "2x_a3ultra_8xh200",
+        "pd_enabled": "true",
+        "prefill_node": 1,
+        "prefill_dp": 4,
+        "prefill_tp": 2,
+        "decode_node": 1,
+        "decode_dp": 1,
+        "decode_tp": 8,
+        "req_rate": "inf",
+        "input_len": 4096,
+        "output_len": 256,
+        "num_prompts": 2048,
+        "max_curr": 512
+    },
+    {
+        "model": "nvidia/Llama-3.3-70B-Instruct-FP8",
+        "tokenizer": "nvidia/Llama-3.3-70B-Instruct-FP8",
+        "hardware": "2x_a3ultra_8xh200",
+        "pd_enabled": "true",
+        "prefill_node": 1,
+        "prefill_dp": 4,
+        "prefill_tp": 2,
+        "decode_node": 1,
+        "decode_dp": 1,
+        "decode_tp": 8,
+        "req_rate": "inf",
+        "input_len": 4096,
+        "output_len": 512,
+        "num_prompts": 2048,
+        "max_curr": 512
+    }
+]
