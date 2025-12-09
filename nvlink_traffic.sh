@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Interval in seconds
-INTERVAL=10
+INTERVAL=2
 NUM_GPUS=8
 
 echo "Monitoring NVLink throughput for GPUs 0-$(($NUM_GPUS - 1)) every $INTERVAL second(s)... Press Ctrl+C to stop."

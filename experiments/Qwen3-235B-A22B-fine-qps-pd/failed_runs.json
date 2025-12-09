@@ -1,0 +1,38 @@
+[
+    {
+        "model": "Qwen/Qwen3-235B-A22B",
+        "tokenizer": "Qwen/Qwen3-235B-A22B",
+        "hardware": "3x_a3ultra_8xh200",
+        "notes": "Qwen3-235B-A22B-qps-sweep-2p1d",
+        "pd_enabled": "true",
+        "prefill_node": 2,
+        "prefill_dp": 1,
+        "prefill_tp": 8,
+        "decode_node": 1,
+        "decode_dp": 1,
+        "decode_tp": 8,
+        "req_rate": 44,
+        "input_len": 4096,
+        "output_len": 512,
+        "num_prompts": 1024,
+        "max_curr": null
+    },
+    {
+        "model": "Qwen/Qwen3-235B-A22B",
+        "tokenizer": "Qwen/Qwen3-235B-A22B",
+        "hardware": "3x_a3ultra_8xh200",
+        "notes": "Qwen3-235B-A22B-qps-sweep",
+        "pd_enabled": "false",
+        "prefill_node": 0,
+        "prefill_dp": 0,
+        "prefill_tp": 0,
+        "decode_node": 3,
+        "decode_dp": 1,
+        "decode_tp": 8,
+        "req_rate": 60,
+        "input_len": 4096,
+        "output_len": 512,
+        "num_prompts": 1024,
+        "max_curr": null
+    }
+]

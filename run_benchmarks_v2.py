@@ -9,14 +9,17 @@ from datetime import datetime
 from typing import Dict, Any, List
 
 # --- Server details (adjust if needed) ---
-IP = "34.0.139.51"
+IP = "35.214.219.102"
 PORT = 80
 
-# --- Define the Master CSV file ---
-RESULTS_CSV_FILE = "benchmark_results_v2.csv"
-FAILED_RUNS_FILE = "failed_runs.json"
-MAX_RETRIES = 5
-GPU_COOLDOWN_SEC = 60
+# --- Experiment Configuration ---
+SHORT_EXPERIMENT_NAME = "llama3.3-70b-fp8-1x-a3ultra-tests"
+EXPERIMENT_DIR = os.path.join("experiments", SHORT_EXPERIMENT_NAME)
+RESULTS_CSV_FILE = os.path.join(EXPERIMENT_DIR, "benchmark_results_v2.csv")
+FAILED_RUNS_FILE = os.path.join(EXPERIMENT_DIR, "failed_runs.json")
+RAW_RESULTS_DIR = os.path.join(EXPERIMENT_DIR, "raw_results")
+MAX_RETRIES = 10
+GPU_COOLDOWN_SEC = 20
 
 # --- List of all benchmark configurations to run ---
 # Each dictionary represents one benchmark run.
@@ -29,21 +32,22 @@ BENCHMARK_CONFIGS = [
 BASE_CONFIG = {
     "model": "nvidia/Llama-3.3-70B-Instruct-FP8",
     "tokenizer": "nvidia/Llama-3.3-70B-Instruct-FP8",
-    "hardware": "2x_a3ultra_8xh200",
+    "hardware": "1x_a3ultra_8xh200 nvlink",
     "pd_enabled": "true",
-    "prefill_node": 1,
-    "prefill_dp": 4,
-    "prefill_tp": 2,
+    "prefill_node": 4,
+    "prefill_dp": 1,
+    "prefill_tp": 1,
     "decode_node": 1,
     "decode_dp": 1,
-    "decode_tp": 8,    
+    "decode_tp": 4,    
     "req_rate": "inf", # Using "inf" for throughput benchmarks
 }
 
 # --- Define the parameter spaces for the 3-D sweep ---
-INPUT_LENS = [256, 512, 1024, 2048, 4096]
-OUTPUT_LEN_RATIOS = [16, 8, 4, 2, 1]  # Corresponds to 1:1, 1:2, ..., 1:16
-MAX_CONCURRENCY_VALUES = [16, 32, 64, 128, 256, 512]
+INPUT_LENS = [1024]
+OUTPUT_LEN_RATIOS = [4]  # Corresponds to 1:1, 1:2, ..., 1:16
+MAX_CONCURRENCY_VALUES = [4, 8, 16, 32, 64, 128, 256]
+
 
 # Generate the full list of configurations
 BENCHMARK_CONFIGS = []
@@ -58,7 +62,7 @@ for input_len in INPUT_LENS:
 
         for max_curr in MAX_CONCURRENCY_VALUES:
             config = BASE_CONFIG.copy()
-            num_prompts = max(256, 4 * max_curr)
+            num_prompts = min(1024, max(256, 8 * max_curr)) 
 
             config.update({
                 "input_len": input_len,
@@ -95,7 +99,7 @@ def run_benchmark(config: Dict[str, Any]) -> Dict[str, Any]:
     """
     for attempt in range(MAX_RETRIES):
         print(f"\n--- Running benchmark (Attempt {attempt + 1}/{MAX_RETRIES}) for config: "
-              f"max_curr={config['max_curr']}, input_len={config['input_len']}, output_len={config['output_len']} ---")
+              f"num-prompts={config['num_prompts']}, max_curr={config['max_curr']}, input_len={config['input_len']}, output_len={config['output_len']} ---")
         
         command = [
             "vllm", "bench", "serve",
@@ -135,9 +139,8 @@ def run_benchmark(config: Dict[str, Any]) -> Dict[str, Any]:
             if results.get("completed") == config.get("num_prompts"):
                 print("--- Benchmark successful: completed requests match num_prompts. ---")
                 # Move successful result to archive
-                raw_results_dir = "raw_results"
-                os.makedirs(raw_results_dir, exist_ok=True)
-                archive_filepath = os.path.join(raw_results_dir, os.path.basename(result_file))
+                os.makedirs(RAW_RESULTS_DIR, exist_ok=True)
+                archive_filepath = os.path.join(RAW_RESULTS_DIR, os.path.basename(result_file))
                 os.rename(result_file, archive_filepath)
                 print(f"--- Raw results saved to: {archive_filepath} ---")
                 return results
@@ -166,6 +169,9 @@ def main():
     """
     Main function to loop through configs and save results.
     """
+    # Create the base directory for this experiment's results
+    os.makedirs(EXPERIMENT_DIR, exist_ok=True)
+
     # Check if the CSV file needs a header.
     # This is true if the file doesn't exist or is empty.
     write_header = not os.path.exists(RESULTS_CSV_FILE) or os.path.getsize(RESULTS_CSV_FILE) == 0

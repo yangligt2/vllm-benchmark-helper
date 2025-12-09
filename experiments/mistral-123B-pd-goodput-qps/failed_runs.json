@@ -1,0 +1,40 @@
+[
+    {
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "tokenizer": "mistralai/Mistral-Large-Instruct-2411",
+        "hardware": "a3ultra_8xh200",
+        "notes": "mistral-123B-6000isl-500osl-pd-tp4-goodput-12k-60-1",
+        "pd_enabled": "true",
+        "prefill_node": 4,
+        "prefill_dp": 2,
+        "prefill_tp": 4,
+        "decode_node": 1,
+        "decode_dp": 1,
+        "decode_tp": 8,
+        "goodput": "ttft:12000 tpot:60",
+        "req_rate": 50,
+        "input_len": 6000,
+        "output_len": 500,
+        "num_prompts": 3000,
+        "max_curr": null
+    },
+    {
+        "model": "mistralai/Mistral-Large-Instruct-2411",
+        "tokenizer": "mistralai/Mistral-Large-Instruct-2411",
+        "hardware": "a3ultra_8xh200",
+        "notes": "mistral-123B-6000isl-500osl-nonpd-goodput-12k-60",
+        "pd_enabled": "false",
+        "prefill_node": 0,
+        "prefill_dp": 0,
+        "prefill_tp": 0,
+        "decode_node": 5,
+        "decode_dp": 1,
+        "decode_tp": 8,
+        "goodput": "ttft:12000 tpot:60",
+        "req_rate": 40,
+        "input_len": 6000,
+        "output_len": 500,
+        "num_prompts": 2400,
+        "max_curr": null
+    }
+]

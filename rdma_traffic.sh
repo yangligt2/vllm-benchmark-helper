@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Interval in seconds
-INTERVAL=10
+INTERVAL=2
 NUM_NICS=8
 
 echo "Monitoring RDMA throughput for NICs mlx5_0-$(($NUM_NICS - 1)) every $INTERVAL second(s)... Press Ctrl+C to stop."
